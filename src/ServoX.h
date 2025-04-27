@@ -52,25 +52,27 @@ int read_pos();
 void load_pos();
 void save_pos(uint8_t val);
 
-//void save_min(uint8_t val);
-//void load_min();
-
-//void save_max(uint8_t val);
-//void load_max();
 
 
 void startMove(int targetAngle);
+
+void moveServo(int startAngle, int endAngle);
 
 
 private:
     
     int delayMs;
 
-    void task(int targetAngle); 
+    //void task(int targetAngle); 
        
-    static void taskWrapper(void* parameter);
-    void moveServo(int startAngle, int endAngle);
+    //static void taskWrapper(void* parameter);
+    //void moveServo(int startAngle, int endAngle);
     
+    TaskHandle_t myTaskHandle = NULL; // Handle for the task
+    QueueHandle_t angleQueue = NULL; // Queue for passing target angles
+
+    void task(); // Persistent task function
+    static void taskWrapper(void* parameter);
 
 };
 #endif 

@@ -46,9 +46,8 @@ void ServoX::load_pos()
      
   if (init_value<=min_value) {init_value=30;}
   if (init_value>=max_value) {init_value=30;}
-  
-
   startMove(init_value);
+  
 
 }
 
@@ -77,7 +76,7 @@ void ServoX::init(int _pin, String _name,int _min, int _max)
  //pinMode(PIN, OUTPUT);
  //this->_servo.attach(_pin);
  this->_servo.attach(_pin, 544, 2550);
- delayMs=5;
+ delayMs=15;
  // initial angle = 0 
  _servo.write(0);
  moving=0;
@@ -86,74 +85,74 @@ void ServoX::init(int _pin, String _name,int _min, int _max)
  
  timer_const=MOVE_STEP;
 
+ angleQueue = xQueueCreate(5, sizeof(int)); // Queue size: 5, item size: int
+
+    // Create a persistent task
+ xTaskCreatePinnedToCore(taskWrapper, name.c_str(), 2048, this, 1, &myTaskHandle, 1);
+
  
  return;   
 }
 
 
 
- void ServoX::startMove(int targetAngle) {
-        // Creează structura pentru a transmite parametrii către task
-        int max = max_value;
-        int min = min_value;
-        if (targetAngle<min) {targetAngle=min;}
-        if (targetAngle>max) {targetAngle=max;}
-
-        ServoTaskParams* params = new ServoTaskParams{this, targetAngle};
-        xTaskCreatePinnedToCore(taskWrapper, "Servo Move Task", 1000, params, 1, NULL, 1);
-    }
+ 
 
 
-void ServoX::task(int targetAngle) {
-      int currentAngle = _servo.read(); // Citește unghiul curent
+void ServoX::task() {
+  int targetAngle;
 
-      // Afișează unghiul curent la consola serială
-      
-      //Serial.println();
-      //Serial.print("Unghi curent: ");
-      //Serial.println(currentAngle);
-
-      // Mișcă servomotorul la unghiul țintă
-      moveServo(currentAngle, targetAngle);
-      // Task-ul se încheie după ce mișcarea este completă
-      vTaskDelete(NULL);
+  while (true) {
+      // Wait for a new target angle from the queue
+      if (xQueueReceive(angleQueue, &targetAngle, portMAX_DELAY) == pdTRUE) {
+          int currentAngle = _servo.read(); // Read the current angle
+          moveServo(currentAngle, targetAngle); // Move to the target angle
+      }
   }
+}
 
 
 // Wrapper static pentru a putea folosi metoda ca task FreeRTOS
 void ServoX::taskWrapper(void* parameter) {
-    // Castăm parametrul la structura noastră
-    ServoTaskParams* params = static_cast<ServoTaskParams*>(parameter);
-    ServoX* _this = params->servoMotor;
-    int targetAngle = params->targetAngle;
-
-    // Apelarea metodei task cu unghiul specificat
-    _this->task(targetAngle);
-
-    // Eliberarea memoriei pentru structura de parametri
-    delete params;
+  ServoX* _this = static_cast<ServoX*>(parameter);
+  _this->task();
+ 
 }
 
 
 // Funcție de ajutor pentru a mișca servomotorul între două unghiuri
 void ServoX::moveServo(int startAngle, int endAngle) {
-    //used for identify when servo is still moving
-    this->moving=1;
-    if (startAngle < endAngle) {
-        for (int angle = startAngle; angle <= endAngle; angle++) {
-            _servo.write(angle);
-            vTaskDelay(delayMs / portTICK_PERIOD_MS);
-        }
-    } else if (startAngle > endAngle) {
-        for (int angle = startAngle; angle >= endAngle; angle--) {
-            _servo.write(angle);
-            vTaskDelay(delayMs / portTICK_PERIOD_MS);
-        }
-    }
-    this->moving=0;
+  //used for identify when servo is still moving
+  this->moving=1;
+  if (startAngle < endAngle) {
+      for (int angle = startAngle; angle <= endAngle; angle++) {
+          _servo.write(angle);
+          vTaskDelay(delayMs / portTICK_PERIOD_MS);
+      }
+  } else if (startAngle > endAngle) {
+      for (int angle = startAngle; angle >= endAngle; angle--) {
+          _servo.write(angle);
+          vTaskDelay(delayMs / portTICK_PERIOD_MS);
+      }
+  }
+  this->moving=0;
 }
 
-   
+
+void ServoX::startMove(int targetAngle) {
+  // Ensure the target angle is within the valid range
+  if (targetAngle < min_value) {
+      targetAngle = min_value;
+  }
+  if (targetAngle > max_value) {
+      targetAngle = max_value;
+  }
+
+  // Send the target angle to the queue
+  if (angleQueue != NULL) {
+      xQueueSend(angleQueue, &targetAngle, portMAX_DELAY);
+  }
+}   
     
 
 

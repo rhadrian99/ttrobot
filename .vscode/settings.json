@@ -54,7 +54,13 @@
         "ios": "cpp",
         "locale": "cpp",
         "queue": "cpp",
-        "cstdbool": "cpp"
+        "cstdbool": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "list": "cpp",
+        "ratio": "cpp",
+        "mutex": "cpp",
+        "regex": "cpp"
     },
     "cmake.configureOnOpen": false
 }

@@ -21,27 +21,27 @@ class infrared_template_servo: public infrared_template_empty
   void _T2() override  // save pan minim
     {
       pan.startMove(pan.min_value);
-      display.displayImage(IMAGES[11],0.5);
+      display.displayImage(IMAGES[9],0.5);
       show_display_status();
       
     }
   void _T3() override // save pan maxim
     {
       pan.startMove(pan.max_value);
-      display.displayImage(IMAGES[9],0.5);
+      display.displayImage(IMAGES[11],0.5);
       show_display_status();
     }
 
 void _T5() override
     {
       tilt.startMove(tilt.min_value);
-      display.displayImage(IMAGES[10],0.5);
+      display.displayImage(IMAGES[8],0.5);
       show_display_status();
     }
   void _T6() override // save tilt max
     {
       tilt.startMove(tilt.max_value);
-      display.displayImage(IMAGES[8],0.5);
+      display.displayImage(IMAGES[10],0.5);
       show_display_status();
     }
   void _TOK() override

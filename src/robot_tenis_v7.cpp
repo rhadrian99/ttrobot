@@ -212,7 +212,7 @@ void setup()
   tilt.load_pos();
 
   
-  BrushTimer.attach_ms(30, update_motors);  
+  BrushTimer.attach_ms(50, update_motors);  
   //IRTimer.attach_ms(50, receive_ir);  
   BeepTimer.attach_ms(1000*60*8, Beep_off);  // silent the beef from motors at every 8 min
   memory_timer.attach_ms(1000*5, printMemoryStats);  // silent the beef from motors at every 8 min

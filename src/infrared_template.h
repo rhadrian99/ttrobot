@@ -107,11 +107,11 @@ public:
     show_display_status();
   }
 
-  void virtual _T4()
+  void load_target_point(String position)
   {
-     if (execute) return;
-     Point1.name="Point1";
-     target_point POINT=target_load_nvm(Point1);
+    target_point T;
+    T.name=position;
+    target_point POINT=target_load_nvm(T);
      
      motor_up.speed=POINT._up; 
      motor_down.speed=POINT._down; 
@@ -147,74 +147,27 @@ public:
      feeder.index= POINT.stepper_index;
      show_display_status();
      feeder.start();
+    
+  }
 
+
+  void virtual _T4()
+  {
+     if (execute) return;
+     load_target_point("Point1");
+     
   }
 
   void virtual _T5()
   {
      if (execute) return;
-     Point2.name="Point2";
-     target_point POINT=target_load_nvm(Point2);
-
-     
-     motor_up.speed=POINT._up; 
-     motor_down.speed=POINT._down; 
-     motor_up.index=POINT.index_up; 
-     motor_down.index=POINT.index_down; 
-     motor_up.set_speed();
-     motor_down.set_speed();
-     motor_up.spin=POINT.spin_up;
-     motor_down.spin=POINT.spin_down;
-     
-     if (motor_up.spin==Brush::TOPSPIN) {
-      motor_down.spin=Brush::SUPPORT; 
-      motor_up.set_spin_after_load(Brush::TOPSPIN);
-      motor_down.set_spin_after_load(Brush::SUPPORT);
-    } 
-     else if (motor_up.spin==Brush::SUPPORT) {
-      motor_down.spin=Brush::BACKSPIN;
-      motor_up.set_spin_after_load(Brush::SUPPORT);
-      motor_down.set_spin_after_load(Brush::BACKSPIN);
-    } 
-     else if (motor_up.spin==Brush::NOSPIN) {
-      motor_down.spin=Brush::NOSPIN;
-      motor_up.set_spin_after_load(Brush::SUPPORT);
-      motor_down.set_spin_after_load(Brush::SUPPORT);
-     } 
-
-
-     pan.startMove(POINT._pan_pos);
-     tilt.startMove(POINT._tilt_pos);
-     tempo_empty(500);
-     feeder.stop();
-     feeder.speed= POINT.stepper_speed;
-     feeder.index= POINT.stepper_index;
-     show_display_status();
-     feeder.start();
+     load_target_point("Point2");
   }
 
   void virtual _T6()
   {
      if (execute) return;
-     Point3.name="Point3";
-     target_point POINT=target_load_nvm(Point3);
-    
-     motor_up.speed=POINT._up; 
-     motor_down.speed=POINT._down; 
-     motor_up.index=POINT.index_up; 
-     motor_down.index=POINT.index_down;
-     motor_up.set_speed();
-     motor_down.set_speed(); 
-     
-     pan.startMove(POINT._pan_pos);
-     tilt.startMove(POINT._tilt_pos);
-
-     tempo_empty(1000);
-     feeder.stop();
-     feeder.speed= POINT.stepper_speed;
-     feeder.index= POINT.stepper_index;
-     show_display_status();
-     feeder.start();
+     load_target_point("Point3");
   }
 
   
@@ -391,7 +344,7 @@ public:
     feeder.stop();
     execute=false;
     mode='N';
-    
+        
     motor_down.stop();
     motor_up.stop();
     tempo_empty(500);

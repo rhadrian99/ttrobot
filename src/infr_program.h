@@ -120,13 +120,21 @@ public:
       if (execute==false)  //stop the programming mode
       {
         mode='N';
-        display.displayImage(IMAGES[12],1); // ok save
+        
         feeder.index=0;
+        feeder.stop();
 
+        motor_up.index=0;
+        motor_down.index=0;
         motor_down.stop();
         motor_up.stop();
+        motor_down.set_speed();
+        motor_up.set_speed(); 
+                
         tempo_empty(500);
+
         initial_position(); // servo to neutral position
+        display.displayImage(IMAGES[12],0.5); // ok save
       }
       else // start the program  execute=true
       {
@@ -136,8 +144,6 @@ public:
           tempo_empty(800);
           mode='N';
           
-          
-
       }
             
   }
@@ -160,9 +166,15 @@ public:
     execute=false;
     mode='N';
     feeder.index=0;
+    feeder.stop();
 
+    motor_up.index=0;
+    motor_down.index=0;
     motor_down.stop();
     motor_up.stop();
+    motor_down.set_speed();
+    motor_up.set_speed(); 
+
     tempo_empty(500);
     
     initial_position(); // servo to neutral position

@@ -70,12 +70,27 @@ motor.setPeriodHertz(50); ///  mandatory
 void Brush::check_data(bool force)
 {
   
-  String dataType="backspin";
+  String dataType="nospin";
   brush_mem.begin(dataType.c_str(),false);
    
   size_t length=brush_mem.getBytesLength(dataType.c_str());
+  char buffer1[length];
+  size_t _length = brush_mem.getBytes(dataType.c_str(), buffer1, length);
+  
+  if (_length==0 || force)
+  {
+  uint8_t _size=sizeof(_NOSPIN);
+  brush_mem.putBytes(dataType.c_str(), &_NOSPIN, _size);
+  }
+  brush_mem.end();
+  
+  ////////////////////////
+  dataType="backspin";
+  brush_mem.begin(dataType.c_str(),false);
+   
+  length=brush_mem.getBytesLength(dataType.c_str());
   char buffer2[length];
-  size_t _length = brush_mem.getBytes(dataType.c_str(), buffer2, length);
+  _length = brush_mem.getBytes(dataType.c_str(), buffer2, length);
   
   if (_length==0 || force)
   {
@@ -160,6 +175,12 @@ void Brush::save_data_as()
     dataType="support_down";
   }
   
+  if ((spin == _spinType::NOSPIN))
+  {
+    dataType="nospin";
+  }
+
+
   brush_mem.begin(dataType.c_str(),false);
   uint8_t _size=sizeof(_SPEEDS);
   brush_mem.putBytes(dataType.c_str(), &_SPEEDS, _size);  
@@ -197,8 +218,8 @@ void Brush::load_data_as()
   
   if ((spin == _spinType::NOSPIN) )
   {
-    dataType="support_down";
-    spintype="SUPPORT";
+    dataType="nospin";
+    spintype="NOSPIN";
   }
 
   brush_mem.begin(dataType.c_str(),false);
@@ -258,24 +279,23 @@ void Brush::increase_speed()
   if (spin==Brush::NOSPIN)  {microstep=SUPPORT_STEP;}
   //index++;
   speed+= microstep;
-  if (index==0) {index++;this->speed=_SPEEDS[index]; set_speed();return;}
-    
-  if (index>= 8)
-  {
-      index = 8;
-      speed=_SPEEDS[index];
-  }
-  else // index <8 and index >0
-  {
-    
-    if (speed==_SPEEDS[index+1])
-    {
-      index++;
-    }
+  if (index==0) {index++;this->speed=_SPEEDS[index]; set_speed();return;} // takes first value from array 
 
+  if (speed==_SPEEDS[index+1])
+  {
+    index++; /// show active the next led
+    if (index>8) {
+      index=8;
+      speed= _SPEEDS[8]; 
+    }
+  }
+
+  if (speed>_SPEEDS[8])
+  {
+    index=8;
+    speed= _SPEEDS[8]; 
   }
   
-   
  set_speed();     
  Serial.print(motor_position + F(" speed = "));
  Serial.println(speed, DEC);
@@ -300,11 +320,12 @@ void Brush:: decrease_speed()
 
       }
       
-      if (speed ==_SPEEDS[index-1] )
-        {
-          index--;
-        }
-       
+    if (speed<_SPEEDS[index])
+    {
+      index--; /// show active the next led
+      
+    }
+
 
    set_speed();
    Serial.print(motor_position + F(" speed = "));
@@ -395,6 +416,6 @@ void Brush::reporting()
   {
     DEBUG(_SPEEDS[i],false);
   }
-  NL();
+  
   
 }

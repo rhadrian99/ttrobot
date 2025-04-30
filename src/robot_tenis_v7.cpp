@@ -58,12 +58,13 @@ void status()
 {
     
   DEBUG("********************** mode: ",true);
+  motor_up.reporting();NL();
+  motor_down.reporting();NL();
+  
   DEBUG("STATUS: "+ motor_up.motor_position+"  -> "+motor_up.spintype+", speed = ",motor_up.speed,true) ;
   DEBUG("STATUS: "+ motor_down.motor_position+"-> "+motor_down.spintype+", speed = ",motor_down.speed,false) ;
   NL();
-  
-  NL();
-  NL();
+    
   DEBUG("STATUS:  SERVO PAN pos   ->" ,pan.read_pos(),false);
   DEBUG("         [---] PAN MIN   -> " ,pan.min_value,false);
   DEBUG("         [---] PAN MAX   -> " ,pan.max_value,false);
@@ -144,7 +145,7 @@ if (irrecv.decode())
     {
       DEBUG(F("IR value: "),receive_value,true); Serial.println();
       infrared_menu(receive_value, mode);
-      tempo_empty(200);
+      //tempo_empty(100);
       status();
       
     }
@@ -161,7 +162,7 @@ if (irrecv.decode())
 void IRTask(void* parameter) {
   while (true) {
       receive_ir();
-      vTaskDelay(10 / portTICK_PERIOD_MS); // Adjust delay as needed
+      vTaskDelay(30 / portTICK_PERIOD_MS); // Adjust delay as needed
   }
 }
 
@@ -215,7 +216,7 @@ void setup()
   BrushTimer.attach_ms(50, update_motors);  
   //IRTimer.attach_ms(50, receive_ir);  
   BeepTimer.attach_ms(1000*60*8, Beep_off);  // silent the beef from motors at every 8 min
-  memory_timer.attach_ms(1000*5, printMemoryStats);  // silent the beef from motors at every 8 min
+  //memory_timer.attach_ms(1000*5, printMemoryStats);  // silent the beef from motors at every 8 min
   //BeepTimer.attach_ms(1000*20, Beep_off);  
   //StatusTimer.attach_ms(4000, status); 
   

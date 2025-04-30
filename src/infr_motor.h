@@ -23,6 +23,11 @@ class infr_motor: public infrared_template_empty
         motor_up.update_speeds(motor_up._SPEEDS,motor_up.speed,"SUPPORT",SUPPORT_STEP);
       }
 
+      if (motor_up.spin==Brush::NOSPIN)
+      {
+        motor_up.update_speeds(motor_up._SPEEDS,motor_up.speed,"NOSPIN",SUPPORT_STEP);
+      }
+    
       motor_up.save_data_as();
       motor_up.load_data_as(); // load and report
       
@@ -106,6 +111,7 @@ class infr_motor: public infrared_template_empty
   {
      if (motor_up.spin==Brush::TOPSPIN) motor_up.increase_speed(MOTOR_STEP_SETUP);
      if (motor_up.spin==Brush::SUPPORT) motor_up.increase_speed(SUPPORT_STEP_SETUP);
+     if (motor_up.spin==Brush::NOSPIN) motor_up.increase_speed(SUPPORT_STEP_SETUP);
      display.displayImage(IMAGES[10],0.5);
       
   }
@@ -115,6 +121,7 @@ class infr_motor: public infrared_template_empty
     
     if (motor_up.spin==Brush::TOPSPIN) motor_up.decrease_speed(MOTOR_STEP_SETUP);
     if (motor_up.spin==Brush::SUPPORT) motor_up.decrease_speed(SUPPORT_STEP_SETUP);
+    if (motor_up.spin==Brush::NOSPIN) motor_up.decrease_speed(SUPPORT_STEP_SETUP);
     display.displayImage(IMAGES[8],0.2);
 
   }
@@ -122,6 +129,7 @@ class infr_motor: public infrared_template_empty
   {
       if (motor_down.spin==Brush::BACKSPIN) motor_down.increase_speed(MOTOR_STEP_SETUP);
       if (motor_down.spin==Brush::SUPPORT) motor_down.increase_speed(SUPPORT_STEP_SETUP);
+      if (motor_down.spin==Brush::NOSPIN) motor_down.increase_speed(SUPPORT_STEP_SETUP);
       display.displayImage(IMAGES[10],0.2);
 
   }
@@ -130,6 +138,7 @@ class infr_motor: public infrared_template_empty
   {
     if (motor_down.spin==Brush::BACKSPIN) motor_down.decrease_speed(MOTOR_STEP_SETUP);
     if (motor_down.spin==Brush::SUPPORT) motor_down.decrease_speed(SUPPORT_STEP_SETUP);
+    if (motor_down.spin==Brush::NOSPIN) motor_down.decrease_speed(SUPPORT_STEP_SETUP);
     display.displayImage(IMAGES[8],0.2);
 
   }
